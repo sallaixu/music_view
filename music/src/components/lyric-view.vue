@@ -1,13 +1,13 @@
 <template>
   <div class="lyrics-container">
-    <div v-for="(line, index) in lyric.lines" :key="index" :class="{ active: index === currentLine }" class="lyric-line">
+    <div v-for="(line, index) in lyricLines" :key="index" :class="{ active: index === 3 }" class="lyric-line">
       {{ line.txt }}
     </div>
   </div>
 </template>
 
 <script>
-import Lyric from 'lyric-parser'
+import Lyric from '../js/LyricUtil'
 export default {
   name: 'LyricView',
   data() {
@@ -20,12 +20,12 @@ export default {
     }
   },
   methods: {
-    setLyric(lyric) {
+    addLyric(lyric) {
       this.lyric = new Lyric(lyric, this.handleLyric)
     },
-    handleLyric({ lineNum }) {
+    handleLyric({lineNum, txt}) {
       this.currentLine = lineNum
-      this.lyricLines = this.lyric.lines.slice(Math.max(lineNum - 5, 0), lineNum + 6)
+      this.lyricLines = this.lyric.lines.slice(Math.max(lineNum - 3, 0), Math.max(lineNum + 3,7))
     },
     handleMusicTimeUpdate(currentTime) {
       // 更新当前播放时间
@@ -40,8 +40,8 @@ export default {
 <style lang="scss">
 
 .lyrics-container {
-  height: 200px; /* 歌词容器的高度 */
-  overflow: auto;
+  height: 100%; /* 歌词容器的高度 */
+  overflow-y: scroll;
   position: relative;
   line-height: 24px; /* 歌词行高度 */
 }
@@ -49,10 +49,15 @@ export default {
 .lyric-line {
   text-align: center;
   transition: 1.0s scale; /* 添加过渡效果 */
+  line-height: 2rem;
+  letter-spacing: 3px;
+  font-size: medium;
 }
 
 .lyric-line.active {
   font-weight: bold; /* 激活状态的歌词加粗显示 */
-  color: rgb(4, 4, 130);
+  color: rgb(0, 0, 0);
+  font-size: x-large;
 }
+
 </style>
