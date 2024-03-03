@@ -1,5 +1,4 @@
 import axios from 'axios'
-import {ElLoading, ElMessage} from 'element-plus'
 const ConfigBaseURL = 'https://music.api.521456.xyz' //默认路径，这里也可以使用env来判断环境
 let loadingInstance = null //这里是loading
 //使用create方法创建axios实例
@@ -15,7 +14,8 @@ export const Service = axios.create({
 Service.interceptors.request.use(config => {
   loadingInstance = ElLoading.service({
     lock: true,
-    text: 'loading...'
+    text: 'Loading',
+    background: 'rgba(0, 0, 0, 0.7)',
   })
   return config
 })
