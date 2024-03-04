@@ -29,6 +29,7 @@ setInterval(() => {
   console.log("timer", index)
   lyric.value.handleMusicTimeUpdate(index);
   index += 3;
+  // lyric.value.scroll(index);
 }, 1000);
 //========================组件接受参数============================
 defineProps({
@@ -68,66 +69,116 @@ function search() {
 </script>
 
 <template>
-  <!-- 搜索结果抽屉 -->
-  <el-drawer v-model="searchListStatus" title="音乐搜索结果" size="40%" :with-header="false">
-    <el-table :data="musicSearchData.musicinfo" stripe style="width: 100%">
-    <el-table-column label="歌曲" prop="title" />
-    <el-table-column label="歌手" prop="artist" />
-    <el-table-column align="right">
-      <template #header>  
-        <el-input  size="small" placeholder="Type to search" />
-      </template>
-      <template #default="scope">
-        <!-- <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
+
+
+  <div class="common-layout">
+    <!-- 搜索结果抽屉 -->
+    <el-drawer v-model="searchListStatus" title="音乐搜索结果" size="40%" :with-header="false">
+      <el-table :data="musicSearchData.musicinfo" stripe style="width: 100%">
+        <el-table-column label="歌曲" prop="title" />
+        <el-table-column label="歌手" prop="artist" />
+        <el-table-column align="right">
+          <template #header>
+            <el-input size="small" placeholder="Type to search" />
+          </template>
+
+          <template #default="scope">
+            <!-- <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
           >Edit</el-button
         > -->
-        <div class="musicOperator">
-          <i-ep-CirclePlus></i-ep-CirclePlus>
-          <i-flat-color-icons:like/>
-        </div>
-        <!-- <el-button
+            <div class="musicOperator">
+              <i-ep-CirclePlus></i-ep-CirclePlus>
+              <i-flat-color-icons:like />
+            </div>
+            <!-- <el-button
           size="small"
           type="danger"
           @click="handleDelete(scope.$index, scope.row)"
           >Delete</el-button -->
-        <!-- > -->
-      </template>
-    </el-table-column>
-  </el-table>
-  </el-drawer>
-
-  <!-- <el-contaniner>
-    <el-header>Header</el-header>
-    <el-main>main</el-main>
-    <el-footer>Footer</el-footer>
-  </el-contaniner> -->
-
-
-  <el-row :gutter="5" justify="center">
-    <el-col :xs="14" :sm="10" :md="8" :lg="8" :xl="8">
-      <div class="input-div">
-        <el-input v-model="keyWord" class="input-class" size="large" placeholder="输入关键词">
-          <template #append>
-            <i-ep-search @click="search" class="search" />
+            <!-- > -->
           </template>
-        </el-input>
-      </div>
-    </el-col>
-  </el-row>
-  <el-row :gutter="5" justify="center">
-    <el-col :xs="14" :sm="10" :md="8" :lg="8" :xl="8">
-      <lyric-view ref="lyric" style="height: 300px;"></lyric-view>
-    </el-col>
-  </el-row>
-  <el-button @click="callLrc">调用子组件</el-button>
+        </el-table-column>
+      </el-table>
+    </el-drawer>
+
+    <el-container style="height: 100%;">
+      <el-header height="100px">
+        <el-row :gutter="5" justify="center">
+          <el-col :xs="14" :sm="10" :md="8" :lg="8" :xl="8">
+            <div class="input-div">
+              <el-input v-model="keyWord" class="input-class" size="large" placeholder="输入关键词">
+
+                <template #append>
+                  <i-ep-search @click="search" class="search" />
+                </template>
+              </el-input>
+            </div>
+          </el-col>
+        </el-row>
+      </el-header>
+
+
+      <el-main>
+        <el-row :gutter="5" justify="center" style="height: 100%;">
+          <el-col :xs="14" :sm="10" :md="8" :lg="8" :xl="8">
+            <lyric-view ref="lyric" style="height: 100%;"></lyric-view>
+          </el-col>
+        </el-row>
+      </el-main>
+
+
+      <el-footer  height="100px">
+        <el-row :gutter="5" justify="center">
+          <el-col :xs="20" :sm="18" :md="12" :lg="12" :xl="12" class="flex-center">
+            <el-button @click="playPre" class="music_operator" type="primary" circle>
+
+              <template #icon>
+                <i-ant-design-left-outlined />
+              </template>
+            </el-button>
+            <el-button @click="playPause" class="music_operator" style="height: 70px; width: 70px; font-size: 40px"
+              type="primary" size="medium" circle>
+
+              <template #icon>
+                <i-bi-play-fill />
+              </template>
+            </el-button>
+            <el-button @click="playNext" class="music_operator" type="primary" circle>
+
+              <template #icon>
+                <i-ant-design-right-outlined />
+              </template>
+            </el-button>
+          </el-col>
+        </el-row>
+      </el-footer>
+    </el-container>
+  </div>
+
+
+
+
+
+
 </template>
 
 <style lang="scss">
+.common-layout {
+  height: 100%;
+}
+
 .input-div {
   width: 100%;
   border-radius: 95px;
   background-color: #ffffff;
   border-radius: 95px;
+}
+
+.flex-center {
+  display: flex !important;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
 }
 
 .input-class {
@@ -164,16 +215,16 @@ function search() {
     transform: scale(0.90);
     /* 按钮点击时稍微缩小 */
   }
-  
+
 
 }
 
-.musicOperator{
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
+.musicOperator {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
 
-  }
+}
 </style>
