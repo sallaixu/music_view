@@ -5,3 +5,10 @@ export function searchMusic(type = 'BABY_MUSIC',keyword,size = 10) {
     method: 'get'
   })
 }
+
+export function getMusicDetail(musicID,type = 'BABY_MUSIC') {
+  return Service({
+    url: `_api/music/detail/${type}/${musicID}`,
+    method: 'get'
+  })
+}

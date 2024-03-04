@@ -32,6 +32,7 @@ declare module 'vue' {
     IconTooling: typeof import('./components/icons/IconTooling.vue')['default']
     IElIconArrowLeft: typeof import('~icons/el/icon-arrow-left')['default']
     IEpCirclePlus: typeof import('~icons/ep/circle-plus')['default']
+    IEpHeadset: typeof import('~icons/ep/headset')['default']
     IEpIconArrowLeft: typeof import('~icons/ep/icon-arrow-left')['default']
     IEpSearch: typeof import('~icons/ep/search')['default']
     'IFlatColorIcons:like': typeof import('~icons/flat-color-icons/like')['default']

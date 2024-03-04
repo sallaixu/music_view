@@ -1,6 +1,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { searchMusic } from '@/api/MusicApi'
+import { searchMusic ,getMusicDetail} from '@/api/MusicApi'
+import { sendRequest } from '@/api/BaseRequest'
+import Howler from 'howler';
 
 //======================变量定义区============================
 //歌词
@@ -13,7 +15,9 @@ let index = 0;
 var type = ref("i-ep-add-location");
 var keyWord = ref("");
 var musicSearchData = ref(null);
-
+const sound = ref(null);
+const songUrl = ref(''); // 用于存储歌曲URL的响应式引用
+var responseData;
 //==================生命周期函数区============================
 onMounted(() => {
   console.log(`the component is now mounted.`)
@@ -25,12 +29,12 @@ onMounted(() => {
 })
 
 //========================定时器区============================
-setInterval(() => {
-  console.log("timer", index)
-  lyric.value.handleMusicTimeUpdate(index);
-  index += 3;
-  // lyric.value.scroll(index);
-}, 1000);
+// setInterval(() => {
+//   console.log("timer", index)
+//   lyric.value.handleMusicTimeUpdate(index);
+//   index += 3;
+//   // lyric.value.scroll(index);
+// }, 1000);
 //========================组件接受参数============================
 defineProps({
   msg: {
@@ -66,7 +70,63 @@ function search() {
     searchListStatus.value = true;
   })
 }
+
+// 设置歌曲的URL并播放
+function setSong(url) {
+  // url = "https://ci-sycdn.kuwo.cn/2bffbe060f9d5e12e23940722e32d276/65e564a9/resource/n3/64/88/986676456.mp3?from=vip"
+  if (sound.value) {
+    sound.value.unload(); // 卸载当前歌曲（如果有的话）
+  }
+  sound.value = new Howl({
+    src: [url],
+    html5: true,
+    onplay: () => {
+      console.log('歌曲开始播放');
+    },
+    onpause: () => {
+      console.log('歌曲已暂停');
+    },
+    onstop: () => {
+      console.log('歌曲已停止');
+    },
+    onend: () => {
+      console.log('歌曲播放结束');
+    },
+    onload: () => {
+      console.log('歌曲已加载');
+      // 可以在这里获取歌曲信息，如时长
+      const duration = sound.value.duration(); // 秒
+      console.log('歌曲时长:', duration);
+    },
+    onprogress: (event) => {
+      // 处理播放进度
+      const progress = (event.played / event.total) * 100;
+      console.log('播放进度:', progress.toFixed(2), '%');
+    }
+  });
+  console.log("准备播放")
+  sound.value.play(); // 加载完成后自动播放
+}
+
+function handlerMusic(data) {
+  console.log("play info" , data.url);
+  getMusicDetail(data.id).then((res)=>{
+    setSong(res.data.url);
+    lyric.value.addLyric(res.data.lyric);
+  })
+  
+  // sendRequest(data.url+"&json=1",null,"get").then((res)=>{
+  //   console.log(res);
+  //   setSong(res.data.url);
+  // })
+}
+
+
 </script>
+
+
+
+
 
 <template>
 
@@ -83,24 +143,15 @@ function search() {
           </template>
 
           <template #default="scope">
-            <!-- <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
-          >Edit</el-button
-        > -->
             <div class="musicOperator">
-              <i-ep-CirclePlus></i-ep-CirclePlus>
-              <i-flat-color-icons:like />
+              <i-ep-Headset class="music_item_icon" @click="handlerMusic(scope.row)"></i-ep-Headset>
+              <i-flat-color-icons:like class="music_item_icon"></i-flat-color-icons:like>
+              <i-ep-CirclePlus class="music_item_icon"></i-ep-CirclePlus>
             </div>
-            <!-- <el-button
-          size="small"
-          type="danger"
-          @click="handleDelete(scope.$index, scope.row)"
-          >Delete</el-button -->
-            <!-- > -->
           </template>
         </el-table-column>
       </el-table>
     </el-drawer>
-
     <el-container style="height: 100%;">
       <el-header height="100px">
         <el-row :gutter="5" justify="center">
@@ -120,7 +171,7 @@ function search() {
 
       <el-main>
         <el-row :gutter="5" justify="center" style="height: 100%;">
-          <el-col :xs="14" :sm="10" :md="8" :lg="8" :xl="8">
+          <el-col :xs="14" :sm="10" :md="8" :lg="8" :xl="8" style="height: 100%; overflow: hidden;">
             <lyric-view ref="lyric" style="height: 100%;"></lyric-view>
           </el-col>
         </el-row>
@@ -163,6 +214,16 @@ function search() {
 </template>
 
 <style lang="scss">
+
+.music_item_icon {
+  cursor: pointer;
+}
+
+.music_item_icon:hover{
+  transform: scale(1.1);
+    /* 按钮点击时稍微缩小 */
+}
+
 .common-layout {
   height: 100%;
 }
