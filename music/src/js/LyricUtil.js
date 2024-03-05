@@ -102,6 +102,7 @@ export default class LyricUtil {
   }
 
   play(startTime = 0, skipLast) {
+    console.log("ll play",startTime);
     if (!this.lines.length) {
       return
     }
@@ -121,11 +122,13 @@ export default class LyricUtil {
   }
 
   togglePlay() {
+    console.log("ll toggplay");
     var now = +new Date()
     if (this.state === STATE_PLAYING) {
       this.stop()
       this.pauseStamp = now
     } else {
+      console.log(this.pauseStamp , now, this.startStamp , now)
       this.state = STATE_PLAYING
       this.play((this.pauseStamp || now) - (this.startStamp || now), true)
       this.pauseStamp = 0
@@ -133,6 +136,7 @@ export default class LyricUtil {
   }
 
   stop() {
+    console.log("ll stop");
     this.state = STATE_PAUSE
     clearTimeout(this.timer)
   }

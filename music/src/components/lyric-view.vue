@@ -2,9 +2,12 @@
 
 <div class="core-container" ref="scroll" >
   <div class="lyrics-container" >
-    <div v-for="(line, index) in lyric.lines" :key="index" :class="{ active: index === currentLine }" class="lyric-line">
+    <div v-for="(line, index) in lyricLines" :key="index" :class="{ active: index === currentLine }" class="lyric-line">
       {{ line.txt }}
     </div>
+    <el-empty v-if="lyricLines == null"
+    image="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
+    />
   </div>
 </div>
 </template>
@@ -18,10 +21,8 @@ export default {
   name: 'LyricView',
   data() {
     return {
-      lyric: {
-        lines:[]
-      },
-      lyricLines: [],
+      lyric: null,
+      lyricLines: null,
       currentLine: 0,
       bs: null,
       lastScrollY: 0
@@ -29,22 +30,50 @@ export default {
   },
   methods: {
     addLyric(lyric) {
-      this.lyric = new Lyric(lyric, this.handleLyric)
-      this.$nextTick(() => {
-        bs = new BScroll(this.$refs.scroll,{
+      try{
+        if(this.lyric != null) {
+          this.lyric.stop();
+          this.lyric = null;
+        }
+        this.lyric = new Lyric(lyric, this.handleLyric)
+        this.lyricLines = this.lyric.lines;
+        if (bs == null) {
+          this.$nextTick(() => {
+          bs = new BScroll(this.$refs.scroll,{
           scrollY: true, // 开启纵向滚动
           click: true, // 开启点击事件
           momentum: false, // 关闭惯性滚动
           probeType: 3, // 实时监听滚动位置变化
         });
-      })
+        })
+        }
+        this.lyric.seek.stop();
+        this.$nextTick(() => {
+          console.log("refresh")
+          bs.refresh();
+        })
+      }catch(error) {
+        console.log(error)
+      }
+      
       
     },
     handleLyric({lineNum, txt}) {
       this.currentLine = lineNum
       var dom = this.$refs.scroll.children[0].children[lineNum];
+      console.log(lineNum,dom);
       bs.scrollToElement(dom,50,true,true);
     },
+    play() {
+      this.lyric.play();
+    },
+    pause() {
+      this.lyric.togglePlay();
+    },
+    stop() {
+      this.lyric.stop();
+    },
+
     handleMusicTimeUpdate(currentTime) {
       // 更新当前播放时间
       this.currentTime = currentTime
