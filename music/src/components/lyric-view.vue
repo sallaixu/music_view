@@ -42,11 +42,8 @@ export default {
     },
     handleLyric({lineNum, txt}) {
       this.currentLine = lineNum
-      this.lyricLines = this.lyric.lines.slice(Math.max(lineNum - 3, 0), Math.max(lineNum + 3,7))
-
       var dom = this.$refs.scroll.children[0].children[lineNum];
-      console.log(dom)
-      bs.scrollToElement(dom,200,true,true);
+      bs.scrollToElement(dom,50,true,true);
     },
     handleMusicTimeUpdate(currentTime) {
       // 更新当前播放时间

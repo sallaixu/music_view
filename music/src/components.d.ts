@@ -17,6 +17,7 @@ declare module 'vue' {
     ElInput: typeof import('element-plus/es')['ElInput']
     ElMain: typeof import('element-plus/es')['ElMain']
     ElRow: typeof import('element-plus/es')['ElRow']
+    ElSlider: typeof import('element-plus/es')['ElSlider']
     ElTable: typeof import('element-plus/es')['ElTable']
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
     'IAntDesign-LeftOutlined': typeof import('~icons/ant-design/-left-outlined')['default']

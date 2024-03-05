@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { searchMusic ,getMusicDetail} from '@/api/MusicApi'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { searchMusic, getMusicDetail } from '@/api/MusicApi'
 import { sendRequest } from '@/api/BaseRequest'
 import Howler from 'howler';
 
@@ -17,16 +17,32 @@ var keyWord = ref("");
 var musicSearchData = ref(null);
 const sound = ref(null);
 const songUrl = ref(''); // 用于存储歌曲URL的响应式引用
-var responseData;
+var musicInfo = ref(null);
+var playProcessTimer;
+//音乐播放进度
+var music_process = ref(0);
+//当前歌曲时长
+var duration = ref(100);
 //==================生命周期函数区============================
 onMounted(() => {
   console.log(`the component is now mounted.`)
-
   // 延迟使用，因为还没有返回跟挂载
   nextTick(() => {
     lyric.value.addLyric(lrc)
   })
 })
+
+onBeforeUnmount(() => {
+  // 在组件销毁之前清除定时器
+  clearTimeout();
+})
+
+function clearTimeout() {
+  if (playProcessTimer) {
+    clearInterval(playProcessTimer);
+    playProcessTimer = null;
+  }
+}
 
 //========================定时器区============================
 // setInterval(() => {
@@ -73,7 +89,6 @@ function search() {
 
 // 设置歌曲的URL并播放
 function setSong(url) {
-  // url = "https://ci-sycdn.kuwo.cn/2bffbe060f9d5e12e23940722e32d276/65e564a9/resource/n3/64/88/986676456.mp3?from=vip"
   if (sound.value) {
     sound.value.unload(); // 卸载当前歌曲（如果有的话）
   }
@@ -82,6 +97,7 @@ function setSong(url) {
     html5: true,
     onplay: () => {
       console.log('歌曲开始播放');
+      musicPlayListen();
     },
     onpause: () => {
       console.log('歌曲已暂停');
@@ -95,8 +111,12 @@ function setSong(url) {
     onload: () => {
       console.log('歌曲已加载');
       // 可以在这里获取歌曲信息，如时长
-      const duration = sound.value.duration(); // 秒
-      console.log('歌曲时长:', duration);
+      let time = sound.value.duration(); // 秒
+      duration.value = time;
+      console.log('歌曲时长:', time);
+    },
+    onseek: (id) => {
+      console.log("onseek")
     },
     onprogress: (event) => {
       // 处理播放进度
@@ -108,17 +128,46 @@ function setSong(url) {
   sound.value.play(); // 加载完成后自动播放
 }
 
+function musicPlayListen() {
+  if (playProcessTimer == null) {
+    playProcessTimer = setInterval(() => {
+      let value = Math.floor(sound.value.seek());
+      lyric.value.handleMusicTimeUpdate(value);
+      music_process.value = value;
+    }, 1000);
+  }
+}
+
 function handlerMusic(data) {
-  console.log("play info" , data.url);
-  getMusicDetail(data.id).then((res)=>{
+  console.log("play info", data.url);
+   
+  getMusicDetail(data.id).then((res) => {
+    musicInfo.value = res.data; 
     setSong(res.data.url);
     lyric.value.addLyric(res.data.lyric);
   })
-  
-  // sendRequest(data.url+"&json=1",null,"get").then((res)=>{
-  //   console.log(res);
-  //   setSong(res.data.url);
-  // })
+
+}
+
+//音乐控制
+function playPause() {
+  if(sound.value.playing()) {
+    sound.value.pause();
+  } else {
+    sound.value.play();
+  }
+}
+
+function playPre() {
+  sound.value.playPre();
+}
+
+function playNext() {
+  sound.value.playNext();
+}
+
+function musicSeek() {
+  sound.value.seek(music_process.value);
 }
 
 
@@ -127,10 +176,7 @@ function handlerMusic(data) {
 
 
 
-
 <template>
-
-
   <div class="common-layout">
     <!-- 搜索结果抽屉 -->
     <el-drawer v-model="searchListStatus" title="音乐搜索结果" size="40%" :with-header="false">
@@ -178,11 +224,19 @@ function handlerMusic(data) {
       </el-main>
 
 
-      <el-footer  height="100px">
+      <el-footer height="100px">
+        <!-- 播放进度条 -->
+        <el-row class="flex-center">
+          <el-col :xs="20" :sm="18" :md="12" :lg="12" :xl="12">
+            <span class="demonstration">{{ musicInfo != null ? musicInfo.title:"" }}</span>
+            <span class="demonstration">{{ musicInfo != null ? musicInfo.artist:"" }}</span>
+            <span style="display: inline">{{ music_process }}</span>
+            <el-slider v-model="music_process" :max="duration" @change="musicSeek"></el-slider>
+          </el-col>
+        </el-row>
         <el-row :gutter="5" justify="center">
           <el-col :xs="20" :sm="18" :md="12" :lg="12" :xl="12" class="flex-center">
             <el-button @click="playPre" class="music_operator" type="primary" circle>
-
               <template #icon>
                 <i-ant-design-left-outlined />
               </template>
@@ -205,23 +259,16 @@ function handlerMusic(data) {
       </el-footer>
     </el-container>
   </div>
-
-
-
-
-
-
 </template>
 
 <style lang="scss">
-
 .music_item_icon {
   cursor: pointer;
 }
 
-.music_item_icon:hover{
+.music_item_icon:hover {
   transform: scale(1.1);
-    /* 按钮点击时稍微缩小 */
+  /* 按钮点击时稍微缩小 */
 }
 
 .common-layout {
