@@ -130,7 +130,8 @@ export default class LyricUtil {
     } else {
       console.log(this.pauseStamp , now, this.startStamp , now)
       this.state = STATE_PLAYING
-      this.play((this.pauseStamp || now) - (this.startStamp || now), true)
+      let time = this.pauseStamp - (this.startStamp || now);
+      this.play(time > 0 ? time:0, true)
       this.pauseStamp = 0
     }
   }
@@ -138,6 +139,7 @@ export default class LyricUtil {
   stop() {
     console.log("ll stop");
     this.state = STATE_PAUSE
+    
     clearTimeout(this.timer)
   }
 

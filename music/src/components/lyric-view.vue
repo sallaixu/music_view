@@ -5,8 +5,8 @@
     <div v-for="(line, index) in lyricLines" :key="index" :class="{ active: index === currentLine }" class="lyric-line">
       {{ line.txt }}
     </div>
-    <el-empty v-if="lyricLines == null"
-    image="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
+    <el-empty v-if="lyricLines == null" description = "暂无歌词"
+    
     />
   </div>
 </div>
@@ -65,13 +65,20 @@ export default {
       bs.scrollToElement(dom,50,true,true);
     },
     play() {
-      this.lyric.play();
+      if(this.lyric) {
+        this.lyric.play();
+      }
+      
     },
     pause() {
+      if(this.lyric) {
       this.lyric.togglePlay();
+      }
     },
     stop() {
+      if(this.lyric) {
       this.lyric.stop();
+      }
     },
 
     handleMusicTimeUpdate(currentTime) {
@@ -113,6 +120,10 @@ export default {
   font-weight: bold; /* 激活状态的歌词加粗显示 */
   color: rgb(0, 0, 0);
   font-size: x-large;
+}
+
+.el-tabs__content{
+  height: 100%;
 }
 
 </style>
