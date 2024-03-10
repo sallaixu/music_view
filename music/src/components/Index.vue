@@ -16,7 +16,7 @@ var keyWord = ref("");
 var musicSearchData = ref(null);
 const sound = ref(null);
 const songUrl = ref(""); // 用于存储歌曲URL的响应式引用
-var musicInfo = ref(null);
+var musicInfo = ref({});
 var playProcessTimer;
 //音乐播放进度
 var music_process = ref(0);
@@ -30,14 +30,12 @@ var volumn = ref(80);
 var playList = ref([]);
 var storage = window.localStorage;
 var songIndex = ref(0);
+var loadingMusic = ref(false);
 //==================生命周期函数区============================
 onMounted(() => {
   init();
   console.log(`the component is now mounted.`);
   // 延迟使用，因为还没有返回跟挂载
-  nextTick(() => {
-    lyric.value.addLyric(lrc);
-  });
 });
 
 function init() {
@@ -107,6 +105,7 @@ function search() {
 // 设置歌曲的URL并播放
 function setSong(url) {
   if (sound.value) {
+    sound.value.stop();
     sound.value.unload(); // 卸载当前歌曲（如果有的话）
   }
   sound.value = new Howl({
@@ -119,22 +118,27 @@ function setSong(url) {
       musicPlayListen();
       lyric.value.pause();
       playing.value = true;
+      loadingMusic.value = false;
     },
     onpause: () => {
       console.log("歌曲已暂停");
       lyric.value.pause();
       playing.value = false;
+      loadingMusic.value = false;
     },
     onstop: () => {
       console.log("歌曲已停止");
       lyric.value.stop();
       playing.value = false;
+      loadingMusic.value = false;
     },
     onend: () => {
       console.log("歌曲播放结束");
       lyric.value.stop();
       playing.value = false;
+      loadingMusic.value = false;
       playNext();
+      
     },
     onload: () => {
       console.log("歌曲已加载");
@@ -149,6 +153,7 @@ function setSong(url) {
     },
   });
   console.log("准备播放");
+  loadingMusic.value = true;
   sound.value.play(); // 加载完成后自动播放
 }
 
@@ -163,12 +168,29 @@ function musicPlayListen() {
     }, 1000);
   }
 }
+
+/**
+ * 移除本地收藏
+ */
+function removeMusic(index,data) {
+  playList.value.splice(index,1);
+  saveLocalStorge();
+  ElMessage({
+    message: "移除:" + data.title + " " + data.artist,
+    type: 'success',
+  })
+}
+
 /**
  * 添加播放列表
  */
 function addPlayList(data) {
   playList.value.push(data);
   saveLocalStorge();
+  ElMessage({
+    message: "已添加:" + data.title + " " + data.artist,
+    type: 'success',
+  })
 }
 
 function handlerMusic(data) {
@@ -215,7 +237,6 @@ function playPause() {
       sound.value.play();  
     }
   }
-  
 }
 
 function playPre() {
@@ -251,14 +272,6 @@ function volumnChange() {
 
 <template>
   <div class="common-layout">
-    <!-- 搜索结果抽屉 -->
-    <el-drawer
-      v-model="searchListStatus"
-      title="音乐搜索结果"
-      size="40%"
-      :with-header="false"
-    >
-    </el-drawer>
     <el-container style="height: 100%">
       <el-header height="100px">
         <el-row :gutter="5" justify="center">
@@ -299,10 +312,10 @@ function volumnChange() {
         <el-row :gutter="5" justify="center" style="height: 100%">
           <el-col
             :xs="24"
-            :sm="20"
-            :md="20"
-            :lg="18"
-            :xl="18"
+            :sm="24"
+            :md="24"
+            :lg="24"
+            :xl="24"
             style="height: 100%; overflow: hidden"
           >
             <el-tabs
@@ -311,7 +324,7 @@ function volumnChange() {
               type="card"
               style="height: 100%"
             >
-              <el-tab-pane name="musciTable" label="播放列表">
+              <el-tab-pane name="musciTable" label="本地收藏">
                 <el-table
                   :data="playList"
                   stripe
@@ -341,13 +354,14 @@ function volumnChange() {
                     </template>
                     <template #default="scope">
                       <div class="musicOperator">
-                        <i-ep-Headset
+                        <i-ep-Headset style="color:rgb(4, 30, 175))"
                           class="music_item_icon"
                           @click="handlerMusic(scope.row)"
                         ></i-ep-Headset>
-                        <i-flat-color-icons:like
+                        <!-- <i-flat-color-icons:like
                           class="music_item_icon"
-                        ></i-flat-color-icons:like>
+                        ></i-flat-color-icons:like> -->
+                        <i-gg-remove style="color:rgb(153, 5, 5)" @click="removeMusic(scope.$index,scope.row)" class="music_item_icon" />
                       </div>
                     </template>
                   </el-table-column>
@@ -410,39 +424,34 @@ function volumnChange() {
 
       <el-footer height="100px">
         <!-- 播放进度条 -->
-        <el-row class="flex-center">
-          <el-col :xs="24" :sm="20" :md="20" :lg="18" :xl="18">
-            <el-tag
-              type="primary"
-              style="font-size: larger"
-              size="large"
-              v-if="musicInfo != null && musicInfo.title != null"
-              >{{ musicInfo.title }}</el-tag
-            >
-            <el-tag
-              style="margin-left: 10px"
+        <el-row style="flex-wrap:wrap">
+          <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6" class="flex-center" style="align-items: end;">
+            <div class="playInfo">
+                <el-image v-if="musicInfo !=null && musicInfo.imgUrl != null" style="width: 100px; height: 100px; min-width:100px;display:block" :src="musicInfo.imgUrl" :fit="cover" />
+                <i-ph-user-bold v-else style="width: 100px; height: 100px"></i-ph-user-bold>
+            </div>
+            <div style="padding-left:5px;overflow-x: auto">
+              <el-tag
               type="primary"
               size="large"
-              v-if="musicInfo != null && musicInfo.artist != null"
-              >{{ musicInfo.artist }}</el-tag
+              v-if="musicInfo != null"
+              >{{ musicInfo.artist == null ? "歌手" : musicInfo.artist }}</el-tag
             >
-            <el-slider
-              v-model="music_process"
-              :max="duration"
-              @change="musicSeek"
-            ></el-slider>
+            <div style="height:6px"></div>
+             <el-tag
+              type="primary"
+              size="large"
+              v-if="musicInfo != null"
+              >{{ musicInfo.title == null ? "暂无歌曲" : musicInfo.title }}</el-tag
+            >
+            
+            
+            </div>
           </el-col>
-        </el-row>
-        <el-row :gutter="5" justify="center">
-          <el-col
-            :xs="20"
-            :sm="18"
-            :md="12"
-            :lg="12"
-            :xl="12"
-            class="flex-center"
-          >
-            <el-button
+
+          <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12" class="flex-center" style="flex-direction:column">
+              <div>
+                <el-button
               @click="playPre"
               class="music_operator"
               type="primary"
@@ -461,8 +470,10 @@ function volumnChange() {
               circle
             >
               <template #icon>
-                <i-bi-play-fill v-if="!playing" />
+                <i-line-md-downloading-loop v-if="loadingMusic"/>
+                <i-bi-play-fill v-else-if="!playing" />
                 <i-ant-design-pause-outlined v-else />
+                
               </template>
             </el-button>
             <el-button
@@ -475,7 +486,15 @@ function volumnChange() {
                 <i-ant-design-right-outlined />
               </template>
             </el-button>
+              </div>
+              <el-slider
+              v-model="music_process"
+              :max="duration"
+              @change="musicSeek"
+            ></el-slider>
+          </el-col>
 
+          <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6" class="flex-center">
             <div class="volumn">
               <i-uil-volume></i-uil-volume>
               <el-slider @change="volumnChange" :min=0 :max=100 :step=1 v-model="volumn" style="max-width:200px"  size="small" />
@@ -506,10 +525,13 @@ function volumnChange() {
     }
   }
 }
+
 .volumn{
-  position: absolute;
-  right: 10px;
+  // position: absolute;
+  // right: 10px;
   width: 200px;
+  min-width:150px;
+  padding: 0 30px 0 30px;
 }
 .common-layout {
   height: 100%;
