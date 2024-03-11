@@ -41,6 +41,7 @@ declare module 'vue' {
     'IFlatColorIcons:like': typeof import('~icons/flat-color-icons/like')['default']
     IGgRemove: typeof import('~icons/gg/remove')['default']
     ILineMdDownloadingLoop: typeof import('~icons/line-md/downloading-loop')['default']
+    IMaterialSymbolsDownloadSharp: typeof import('~icons/material-symbols/download-sharp')['default']
     Index: typeof import('./components/Index.vue')['default']
     IPhUserBold: typeof import('~icons/ph/user-bold')['default']
     IUilVolume: typeof import('~icons/uil/volume')['default']

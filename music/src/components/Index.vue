@@ -4,6 +4,7 @@ import { searchMusic, getMusicDetail } from "@/api/MusicApi";
 import { sendRequest } from "@/api/BaseRequest";
 import Howler from "howler";
 import SearchPage from "./SearchPage.vue";
+// import axios from 'axios'
 //======================变量定义区============================
 //歌词
 var lyric = ref(null);
@@ -220,6 +221,60 @@ function handlerMusic(data) {
 }
 
 
+ async function getMusicPlayDetailInfo(data) {
+  switch (data.sourceType) {
+    case null:
+    case "SLIDER_KZ":
+      break;
+    case "BABY_MUSIC":
+     await getMusicDetail(data.id).then((res) => {
+        data.url = res.data.url;
+        data.lyric = res.data.lyric;
+      });
+      break;
+    default:
+      ElMessage.error("歌曲源不支持:" + data.sourceType);
+    return data;
+}
+}
+
+/**
+ * 下载音乐
+ */
+ async function downMusic(data) {
+  await getMusicPlayDetailInfo(data);
+  // axios({
+  //       url: data.url,
+  //       method: 'GET',
+  //       responseType: 'blob', // 这里就是转化为blob文件流，指定响应类型为二进制数据
+  //       headers: {
+  //       }
+  //     }).then(res => {
+  //       let href = URL.createObjectURL(res.data);
+  //       downloadFile(href, data.title + "-" + data.artist + ".mp3");
+  //     })
+  downloadFile(data.url, data.title + "-" + data.artist + ".mp3");
+}
+
+function downloadFile(fileUrl, fileName) {  
+    // 创建一个新的a标签  
+    var link = document.createElement('a');  
+    link.href = fileUrl; // 设置文件的URL  
+    link.download = fileName; // 设置下载文件的名称  
+    link.style.display = 'none'; // 隐藏a标签
+    link.target = '_blank'
+    console.log(fileUrl,fileName);
+  
+    // 将a标签添加到DOM中  
+    document.body.appendChild(link);  
+  
+    // 模拟点击a标签以触发下载  
+    link.click();  
+  
+    // 下载触发后，立即从DOM中移除a标签  
+    document.body.removeChild(link);  
+}  
+
 function saveLocalStorge() {
   //保存播放列表
   storage.removeItem('playList');
@@ -266,6 +321,7 @@ function volumnChange() {
  console.log("volume",v);
  sound.value.volume(v);
 }
+
 </script>
 
 
@@ -419,6 +475,7 @@ function volumnChange() {
                           class="music_item_icon"
                           @click="addPlayList(scope.row)"
                         ></i-ep-CirclePlus>
+                        <i-material-symbols-download-sharp class="music_item_icon" @click="downMusic(scope.row)"/>
                       </div>
                     </template>
                   </el-table-column>
@@ -605,23 +662,24 @@ function volumnChange() {
 
 //歌曲搜索结果样式修改
 tr{
-  background-color:hsla(0, 0%, 0%, 0) !important
+  background-color:hsla(0, 0%, 100%, 0.3) !important
 }
 td{
-  background-color:hsla(0, 0%, 0%, 0) !important
+  background-color:hsla(0, 0%, 100%, 0.3) !important
 }
 .el-table{
-  background-color:hsla(0, 0%, 0%, 0) !important
+  background-color:hsla(0, 0%, 100%, 0.3) !important;
 }
 .el-table th.el-table__cell {
-  background-color:hsla(0, 0%, 0%, 0) !important
+  background-color:hsla(0, 0%, 98%, 0.3) !important
 }
 .el-table__row--striped {
-  background-color: rgba(75, 75, 75, 0.5) !important
+  background-color: rgba(214, 211, 211, 0.5) !important
 }
 
 .el-tabs__content{
   height: 90%;
+  border-radius: 5px;
 }
 
 </style>
