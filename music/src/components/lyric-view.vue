@@ -117,11 +117,13 @@ export default {
   line-height: 2rem;
   letter-spacing: 3px;
   font-size: medium;
+  color: black;
 }
 
 .lyric-line.active {
   font-weight: bold; /* 激活状态的歌词加粗显示 */
-  color: rgb(0, 0, 0);
+  color: #409eff;
+  text-shadow: 3px 3px 3px rgba(32, 32, 32, 0.815);
   font-size: x-large;
 }
 

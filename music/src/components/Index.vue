@@ -238,6 +238,22 @@ function handlerMusic(data) {
 }
 }
 
+
+
+function getOSSBlobResource(url) {
+      return new Promise((resolve) => {
+        const xhr = new XMLHttpRequest()
+        xhr.open('GET', url, true)
+        xhr.responseType = 'blob'
+        xhr.setRequestHeader('Cache-Control', 'no-cache')
+        xhr.onload = () => {
+          if (xhr.status === 200) {
+            resolve(xhr.response)
+          }
+        }
+        xhr.send()
+      })
+}
 /**
  * 下载音乐
  */
@@ -250,10 +266,21 @@ function handlerMusic(data) {
   //       headers: {
   //       }
   //     }).then(res => {
-  //       let href = URL.createObjectURL(res.data);
-  //       downloadFile(href, data.title + "-" + data.artist + ".mp3");
+  //       let href = URL.createObjectURL(res.data); 
   //     })
-  downloadFile(data.url, data.title + "-" + data.artist + ".mp3");
+  downloadFile("http://music.api.521456.xyz/_api/music/download?url="+data.url, data.title + "-" + data.artist + ".mp3");
+}
+
+function saveFile(data, fileName) {
+      const exportBlob = new Blob([data])
+      const saveLink = document.createElement('a')
+      document.body.appendChild(saveLink)
+      saveLink.style.display = 'none'
+      var urlObject = window.URL.createObjectURL(exportBlob)
+      saveLink.href = urlObject
+      saveLink.download = fileName
+      saveLink.click()
+      document.body.removeChild(saveLink)
 }
 
 function downloadFile(fileUrl, fileName) {  
@@ -262,7 +289,7 @@ function downloadFile(fileUrl, fileName) {
     link.href = fileUrl; // 设置文件的URL  
     link.download = fileName; // 设置下载文件的名称  
     link.style.display = 'none'; // 隐藏a标签
-    link.target = '_blank'
+    // link.target = '_blank'
     console.log(fileUrl,fileName);
   
     // 将a标签添加到DOM中  
@@ -324,13 +351,10 @@ function volumnChange() {
 
 </script>
 
-
-
-
 <template>
   <div class="common-layout">
     <el-container style="height: 100%">
-      <el-header height="100px">
+      <el-header height="auto">
         <el-row :gutter="5" justify="center">
           <el-col :xs="20" :sm="14" :md="10" :lg="8" :xl="8">
             <div class="flex-center">
@@ -487,7 +511,7 @@ function volumnChange() {
         </el-row>
       </el-main>
 
-      <el-footer height="100px">
+      <el-footer height="auto">
         <!-- 播放进度条 -->
         <el-row style="flex-wrap:wrap">
           <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6" class="flex-center" style="align-items: end;">
@@ -509,8 +533,6 @@ function volumnChange() {
               v-if="musicInfo != null"
               >{{ musicInfo.title == null ? "暂无歌曲" : musicInfo.title }}</el-tag
             >
-            
-            
             </div>
           </el-col>
 
@@ -559,7 +581,7 @@ function volumnChange() {
             ></el-slider>
           </el-col>
 
-          <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6" class="flex-center">
+          <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6" class="flex-center" style="align-items:end">
             <div class="volumn">
               <i-uil-volume></i-uil-volume>
               <el-slider @change="volumnChange" :min=0 :max=100 :step=1 v-model="volumn" style="max-width:200px"  size="small" />
@@ -579,6 +601,7 @@ function volumnChange() {
 }
 
 .music_item_icon:hover {
+
   transform: scale(1.1);
   /* 按钮点击时稍微缩小 */
 }
@@ -600,6 +623,10 @@ function volumnChange() {
 }
 .common-layout {
   height: 100%;
+  box-shadow: 0 0 30px 10px rgba(0, 0, 0, .3);
+  backdrop-filter: blur(40px);
+  border-radius: 40px;
+  padding: 10px 0 10px 0;
   
 }
 
@@ -678,6 +705,13 @@ td{
   background-color: rgba(214, 211, 211, 0.5) !important
 }
 
+.el-tabs__header{
+  border-bottom: none !important;
+}
+
+.el-tabs__nav {
+  border: 2px solid whitesmoke !important;
+}
 .el-tabs__content{
   height: 90%;
   border-radius: 5px;

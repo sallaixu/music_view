@@ -10,6 +10,16 @@ export const Service = axios.create({
     'Content-Type': 'application/json;charset=UTF-8'
   }
 })
+
+export const DefaultService = axios.create({
+  timeout: 7000, // 请求超时时间
+  baseURL: ConfigBaseURL,
+  method: 'post',
+  headers: {
+    'Content-Type': 'application/json;charset=UTF-8'
+  }
+})
+
 // 添加请求拦截器
 Service.interceptors.request.use(config => {
   loadingInstance = ElLoading.service({

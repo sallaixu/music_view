@@ -7,6 +7,5 @@ export function sendRequest(url,data,type = "get") {
     data: data,
     jsonp: true,
     baseURL: url,
-    
   })
 }
