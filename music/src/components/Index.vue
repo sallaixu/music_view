@@ -104,6 +104,7 @@ function search() {
 
 // 设置歌曲的URL并播放
 function setSong(url) {
+  loadingMusic.value = false;
   if (sound.value) {
     sound.value.stop();
     sound.value.unload(); // 卸载当前歌曲（如果有的话）
@@ -316,7 +317,7 @@ function volumnChange() {
             :md="24"
             :lg="24"
             :xl="24"
-            style="height: 100%; overflow: hidden"
+            style="height: 100%"
           >
             <el-tabs
               v-model="selectTab"
@@ -336,6 +337,12 @@ function volumnChange() {
                     label="序号"
                     type="index"
                   />
+                   <el-table-column
+                    width="auto"
+                    min-width="10%"
+                    label="源"
+                    prop="sourceType"
+                  />
                   <el-table-column
                     width="auto"
                     min-width="30%"
@@ -344,7 +351,7 @@ function volumnChange() {
                   />
                   <el-table-column
                     width="auto"
-                    min-width="30%"
+                    min-width="20%"
                     label="歌手"
                     prop="artist"
                   />
@@ -354,7 +361,7 @@ function volumnChange() {
                     </template>
                     <template #default="scope">
                       <div class="musicOperator">
-                        <i-ep-Headset style="color:rgb(4, 30, 175))"
+                        <i-ep-Headset style="color:rgb(5, 5, 207)"
                           class="music_item_icon"
                           @click="handlerMusic(scope.row)"
                         ></i-ep-Headset>
@@ -611,6 +618,10 @@ td{
 }
 .el-table__row--striped {
   background-color: rgba(75, 75, 75, 0.5) !important
+}
+
+.el-tabs__content{
+  height: 90%;
 }
 
 </style>

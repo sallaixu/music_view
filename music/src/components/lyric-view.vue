@@ -45,12 +45,14 @@ export default {
           momentum: false, // 关闭惯性滚动
           probeType: 3, // 实时监听滚动位置变化
         });
+        
         })
         }
-        this.lyric.seek.stop();
+        this.lyric.stop();
         this.$nextTick(() => {
           console.log("refresh")
           bs.refresh();
+          this.handleLyric({lineNum:0,txt:""});
         })
       }catch(error) {
         console.log(error)
@@ -99,6 +101,7 @@ export default {
 
 .core-container{
   height: 100% !important;
+  position: relative;
 }
 
 .lyrics-container {
