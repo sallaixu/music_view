@@ -289,7 +289,7 @@ function downloadFile(fileUrl, fileName) {
     link.href = fileUrl; // 设置文件的URL  
     link.download = fileName; // 设置下载文件的名称  
     link.style.display = 'none'; // 隐藏a标签
-    // link.target = '_blank'
+    link.target = '_blank'
     console.log(fileUrl,fileName);
   
     // 将a标签添加到DOM中  
