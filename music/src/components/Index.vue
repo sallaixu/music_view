@@ -425,6 +425,7 @@ function volumnChange() {
                           class="music_item_icon"
                         ></i-flat-color-icons:like> -->
                         <i-gg-remove style="color:rgb(153, 5, 5)" @click="removeMusic(scope.$index,scope.row)" class="music_item_icon" />
+                        <i-material-symbols-download-sharp class="music_item_icon" @click="downMusic(scope.row)"/>
                       </div>
                     </template>
                   </el-table-column>
