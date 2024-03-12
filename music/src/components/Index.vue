@@ -268,7 +268,18 @@ function getOSSBlobResource(url) {
   //     }).then(res => {
   //       let href = URL.createObjectURL(res.data); 
   //     })
-  downloadFile("http://music.api.521456.xyz/_api/music/download?url="+data.url, data.title + "-" + data.artist + ".mp3");
+  ElMessageBox.alert(
+    `<audio controls src="${data.url}" type="audio/mpeg">  
+      您的浏览器不支持audio标签。  
+    </audio>'
+    <p>加载出进度后，点击下载</p>
+    `,
+    '歌曲下载',
+    {
+      dangerouslyUseHTMLString: true,
+    }
+  )
+  // downloadFile(data.url, data.title + "-" + data.artist + ".mp3");
 }
 
 function saveFile(data, fileName) {
@@ -711,10 +722,17 @@ td{
 
 .el-tabs__nav {
   border: 2px solid whitesmoke !important;
+  border-radius: 6px !important;
+  .is-active{
+    color:#409eff !important;
+  }
 }
 .el-tabs__content{
   height: 90%;
   border-radius: 5px;
+}
+.el-tabs__item{
+  color: whitesmoke !important;
 }
 
 </style>
