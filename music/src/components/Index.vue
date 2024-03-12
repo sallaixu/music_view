@@ -273,6 +273,7 @@ function getOSSBlobResource(url) {
       您的浏览器不支持audio标签。  
     </audio>'
     <p>加载出进度后，点击下载</p>
+    <p style="color:blue">${data.title}-${data.artist}
     `,
     '歌曲下载',
     {
