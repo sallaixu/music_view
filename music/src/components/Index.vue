@@ -187,6 +187,13 @@ function removeMusic(index,data) {
  * 添加播放列表
  */
 function addPlayList(data) {
+  if(data.sourceType == null ) {
+    ElMessage({
+    message: "NET_EASY 源不支持添加播放列表",
+    type: 'error',
+  })
+  return;
+  }
   playList.value.push(data);
   saveLocalStorge();
   ElMessage({
