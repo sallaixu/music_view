@@ -40,7 +40,7 @@ var musicSources = ref([{
 }
 
 ]);
-var selectMusicSource = ref(musicSources.value[0].value);
+var selectMusicSource = ref(musicSources.value[3].value);
 var volumn = ref(80);
 var playList = ref([]);
 var storage = window.localStorage;
