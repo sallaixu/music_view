@@ -2,15 +2,15 @@
 
 
 ::-webkit-scrollbar {
-  width: 0px;
+  width: 2px;
   height: 1px;
 }
 ::-webkit-scrollbar-thumb { 
-  background-color: #9fcbf5;
+  background-color: #03529c;
 }
 ::-webkit-scrollbar-track {
   /* // box-shadow: inset 0 0 5px #ddd; */
-  background: #ddd;
+  background: #f1f1f1;
 }
 
 

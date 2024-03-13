@@ -25,8 +25,22 @@ var music_process = ref(0);
 var duration = ref(100);
 var playing = ref(false);
 var selectTab = ref("lyric");
-var musicSources = ref(["BABY_MUSIC", "SLIDER_KZ","NET_EASY"]);
-var selectMusicSource = ref(musicSources.value[0]);
+var musicSources = ref([{
+  value:"BABY_MUSIC", 
+  label: "下歌宝"
+},{
+ value:"SLIDER_KZ",
+ label: "SLIDER.KZ"
+},{
+  value: "NET_EASY",
+  label: "网易云"
+},{
+  value: "HIFI_NI",
+  label: "HIFINI"
+}
+
+]);
+var selectMusicSource = ref(musicSources.value[0].value);
 var volumn = ref(80);
 var playList = ref([]);
 var storage = window.localStorage;
@@ -164,8 +178,6 @@ function musicPlayListen() {
   if (playProcessTimer == null) {
     playProcessTimer = setInterval(() => {
       let value = Math.floor(sound.value.seek());
-      // lyric.value.handleMusicTimeUpdate(value);
-      console.log(value);
       music_process.value = value;
     }, 1000);
   }
@@ -202,24 +214,14 @@ function addPlayList(data) {
   })
 }
 
-function handlerMusic(data) {
+async function handlerMusic(data) {
   console.log("play info", data.url);
-  switch (data.sourceType) {
-    case null:
-    case "SLIDER_KZ":
-      setSong(data.url);
-      musicInfo.value = data;
-      lyric.value.addLyric(data.lyric);
-      break;
-    case "BABY_MUSIC":
-      getMusicDetail(data.id).then((res) => {
-        musicInfo.value = res.data;
-        setSong(res.data.url);
-        lyric.value.addLyric(res.data.lyric);
-      });
-      break;
-    default:
-      ElMessage.error("歌曲源不支持:" + data.sourceType);
+  await getMusicPlayDetailInfo(data);
+  console.log("url",data.url)
+  setSong(data.url);
+  musicInfo.value = data;
+  if(data.lyric != null) {
+    lyric.value.addLyric(data.lyric);
   }
   ElMessage({
     message: "正在加载:" + data.title + " " + data.artist,
@@ -229,20 +231,23 @@ function handlerMusic(data) {
 
 
  async function getMusicPlayDetailInfo(data) {
-  switch (data.sourceType) {
+  // return new Promise((resolve,reject)=>{
+    switch (data.sourceType) {
     case null:
     case "SLIDER_KZ":
       break;
+    case "HIFI_NI":
     case "BABY_MUSIC":
-     await getMusicDetail(data.id).then((res) => {
+       await getMusicDetail(data.id,data.sourceType).then((res) => {
         data.url = res.data.url;
         data.lyric = res.data.lyric;
+        data.imgUrl = res.data.imgUrl;
       });
       break;
     default:
       ElMessage.error("歌曲源不支持:" + data.sourceType);
-    return data;
-}
+    }
+    return data;  
 }
 
 
@@ -279,7 +284,7 @@ function getOSSBlobResource(url) {
     `<audio controls src="${data.url}" type="audio/mpeg">  
       您的浏览器不支持audio标签。  
     </audio>'
-    <p>加载出进度后，点击下载</p>
+    <p>加载出进度后，点击三点下载</p>
     <p style="color:blue">${data.title}-${data.artist}
     `,
     '歌曲下载',
@@ -289,6 +294,8 @@ function getOSSBlobResource(url) {
   )
   // downloadFile(data.url, data.title + "-" + data.artist + ".mp3");
 }
+
+
 
 function saveFile(data, fileName) {
       const exportBlob = new Blob([data])
@@ -398,9 +405,9 @@ function volumnChange() {
               >
                 <el-option
                   v-for="item in musicSources"
-                  :key="item"
-                  :label="item"
-                  :value="item"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
                 />
               </el-select>
             </div>
@@ -593,11 +600,16 @@ function volumnChange() {
               </template>
             </el-button>
               </div>
-              <el-slider
+              
+              <div class="flex-center" style="width:100%">
+                <span class="processTime" style="padding-right:15px">{{Math.trunc(music_process/60) + ':' + (music_process%60 < 10 ? ('0' + music_process%60) : music_process%60)}}</span>
+                <el-slider
               v-model="music_process"
               :max="duration"
               @change="musicSeek"
             ></el-slider>
+            <span class="processTime" style="padding-left:15px">{{Math.trunc(duration/60) + ':' + (duration%60 < 10 ? ('0' + duration%60) : (duration%60).toFixed(0))}}</span>
+              </div>
           </el-col>
 
           <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6" class="flex-center" style="align-items:end">
@@ -631,6 +643,11 @@ function volumnChange() {
       height: 100%;
     }
   }
+}
+
+.processTime{
+  font-weight:bold;
+  color:whitesmoke;
 }
 
 .volumn{
