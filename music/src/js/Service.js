@@ -1,5 +1,5 @@
 import axios from 'axios'
-const ConfigBaseURL = 'https://music.api.521456.xyz' //默认路径，这里也可以使用env来判断环境
+const ConfigBaseURL = import.meta.env.VITE_API_BASE_HOST //默认路径，这里也可以使用env来判断环境
 let loadingInstance = null //这里是loading
 //使用create方法创建axios实例
 export const Service = axios.create({
@@ -22,6 +22,10 @@ export const DefaultService = axios.create({
 
 // 添加请求拦截器
 Service.interceptors.request.use(config => {
+  var token = localStorage.getItem('token')
+  if(token) {
+    config.headers.token = token;
+  }
   loadingInstance = ElLoading.service({
     lock: true,
     text: 'Loading',

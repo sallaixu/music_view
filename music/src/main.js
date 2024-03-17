@@ -1,4 +1,7 @@
 import './assets/main.css'
 import { createApp } from 'vue'
 import App from './App.vue'
-createApp(App).mount('#app')
+import { socketInstance } from '@/js/Socket';
+const app = createApp(App);
+app.config.globalProperties.$socketIo = socketInstance();
+app.mount('#app');

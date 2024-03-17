@@ -1,17 +1,15 @@
 /* color palette from <https://github.com/vuejs/theme> */
 
-
 ::-webkit-scrollbar {
-  width: 2px;
-  height: 1px;
+  width: 4px;
 }
 ::-webkit-scrollbar-thumb { 
-  background-color: #03529c;
+  background-color:rgba(32, 32, 32, 0);
 }
 ::-webkit-scrollbar-track {
-  /* // box-shadow: inset 0 0 5px #ddd; */
-  background: #f1f1f1;
-}
+  /* box-shadow: inset 0 0 5px #fffefe; */
+  background: rgba(32, 32, 32, 0);
+} 
 
 
 

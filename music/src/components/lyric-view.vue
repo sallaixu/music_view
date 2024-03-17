@@ -5,10 +5,8 @@
     <div v-for="(line, index) in lyricLines" :key="index" :class="{ active: index === currentLine }" class="lyric-line">
       {{ line.txt }}
     </div>
-    <el-empty v-if="lyricLines == null" description = "暂无歌词"
-    
-    />
   </div>
+  <el-empty style="height: 100%;" v-if="lyricLines == null" description = "歌词走丢啦~🛸"/>
 </div>
 </template>
 
@@ -16,7 +14,7 @@
 import {ref} from 'vue';
 import Lyric from '../js/LyricUtil'
 import BScroll from 'better-scroll'
-let bs;
+var bs;
 export default {
   name: 'LyricView',
   data() {
@@ -45,10 +43,9 @@ export default {
           momentum: false, // 关闭惯性滚动
           probeType: 3, // 实时监听滚动位置变化
         });
-        
         })
+        bs.refresh();
         }
-        this.lyric.stop();
         this.$nextTick(() => {
           console.log("refresh")
           bs.refresh();
@@ -101,7 +98,17 @@ export default {
 
 .core-container{
   height: 100% !important;
+  overflow-y: auto;
   position: relative;
+  
+}
+
+.core-container:hover::-webkit-scrollbar-thumb {
+    background-color: #636363;
+}
+
+.core-container:hover::-webkit-scrollbar-track {
+  background-color: #ffffff;
 }
 
 .lyrics-container {
@@ -109,6 +116,7 @@ export default {
   // overflow-y: hidden;
   // position: relative;
   line-height: 24px; /* 歌词行高度 */
+  height: fit-content;
 }
 
 .lyric-line {
@@ -127,8 +135,8 @@ export default {
   font-size: x-large;
 }
 
-.el-tabs__content{
-  height: 100%;
-}
+// .el-tabs__content{
+//   height: 100%;
+// }
 
 </style>
