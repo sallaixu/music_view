@@ -10,6 +10,14 @@
   /* box-shadow: inset 0 0 5px #fffefe; */
   background: rgba(32, 32, 32, 0);
 } 
+ 
+.padding-lr5 {
+  padding: 0 5px 0 5px;
+}
+
+.margin-lr5 {
+  margin: 0 5px 0 5px;
+}
 
 
 

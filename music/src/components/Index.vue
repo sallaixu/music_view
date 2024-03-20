@@ -6,9 +6,14 @@ import { getUserInfo } from "@/api/UserApi";
 import Howler from "howler";
 import SearchPage from "./SearchPage.vue";
 import qrcode from 'qrcode';
+import loadingJson from '@/assets/static/animations/loading2.json'
+import { load } from '@/js/Loading.js';
 // import axios from 'axios'
 //======================变量定义区============================
 //歌词
+// const loadingJson = ref(loadingJson);
+// load.show({title:"获取数据中",duration:10000,data:loadingJson});
+// load.hide();
 const { proxy } = getCurrentInstance();
 var lyric = ref(null);
 //音乐搜索结果
@@ -44,7 +49,7 @@ var musicSources = ref([{
 
 ]);
 var selectMusicSource = ref(musicSources.value[3].value);
-var volumn = ref(80);
+var volumn = ref(85);
 var playList = ref([]);
 var storage = window.localStorage;
 var songIndex = ref(0);
@@ -56,6 +61,8 @@ var qrShow = ref(false);
 var cloudLikeSong = ref([]);
 var deleteDialog = ref(false);
 var removeLikeSongId = ref(null);
+//random,order,loop
+var playMode = ref("order")
 
 
 //==================生命周期函数区============================
@@ -240,7 +247,7 @@ function musicPlayListen() {
  */
 function removeMusic(index, data) {
   playList.value.splice(index, 1);
-  saveLocalStorge();
+  // saveLocalStorge();
   ElMessage({
     message: "移除:" + data.title + " " + data.artist,
     type: 'success',
@@ -269,7 +276,7 @@ function removeLikeSong() {
 /**
  * 添加播放列表
  */
-function addPlayList(data) {
+function addLikeList(data) {
   if (data.sourceType == "NEW_EASY") {
     ElMessage({
       message: "NET_EASY 源不支持添加播放列表",
@@ -289,7 +296,16 @@ function addPlayList(data) {
   })
   // playList.value.push(data);
   // saveLocalStorge();
-  
+}
+/**
+ * 批量加入播放列表
+ */
+function playAll(musicData) {
+  console.log(musicData)
+  playList.value = [];
+  playList.value.push(...musicData)
+  songIndex.value = -1;
+  playNext();
 }
 
 async function handlerMusic(data) {
@@ -388,6 +404,32 @@ function saveLocalStorge() {
   storage.setItem('playList', JSON.stringify(playList.value));
 }
 
+//播放模式
+function getPlaySongByMode(isNext = true) {
+  let index = 0;
+  switch (playMode.value) {
+    case 'order':
+        if(isNext) {
+        index = (songIndex.value + 1) < playList.value.length ?
+          songIndex.value + 1 : 0
+      }else{
+        index = (songIndex.value - 1) >= 0 ?
+          songIndex.value - 1 : playList.value.length - 1;
+      }
+      break;
+    case 'random':
+      index = Math.floor(Math.random() * playList.value.length)
+      break;
+    case 'loop':
+      index = songIndex.value;
+      break;
+    default:
+      break;
+  }
+  songIndex.value = index
+  return playList.value[index];
+}
+
 //音乐控制
 function playPause() {
   if (!sound.value && playList.value.length > 0) {
@@ -404,17 +446,14 @@ function playPause() {
 
 function playPre() {
   if (playList.value) {
-    songIndex.value = (songIndex.value - 1) >= 0 ?
-      songIndex.value - 1 : playList.value.length - 1;
-    handlerMusic(playList.value[songIndex.value]);
+    
+    handlerMusic(getPlaySongByMode(false));
   }
 }
 
 function playNext() {
   if (playList.value) {
-    songIndex.value = (songIndex.value + 1) < playList.value.length ?
-      songIndex.value + 1 : 0
-    handlerMusic(playList.value[songIndex.value]);
+    handlerMusic(getPlaySongByMode(true));
   }
 }
 
@@ -446,7 +485,6 @@ function login() {
     type: 'info',
     duration: 2000
   })
-  
 }
 
 
@@ -507,7 +545,9 @@ function logout() {
               <el-option v-for="item in musicSources" :key="item.value" :label="item.label" :value="item.value"
               style="width: fit-content;" />
             </el-select>
+            
           </div>
+          <div style="color: #79bbff;font-weight: bold;">※仅用于技术学习交流</div>
             <div class="flex-center clickAble" v-if="!userInfo.avatar" @click="login">
               <el-tooltip
         class="box-item"
@@ -541,7 +581,7 @@ function logout() {
         <el-row :gutter="5" justify="center" style="height: 100%">
           <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24" style="height: 100%">
             <el-tabs v-model="selectTab" tab-position="top" type="card" style="height: 100%">
-              <el-tab-pane name="musciTable" label="本地收藏">
+              <el-tab-pane name="musciTable" label="播放列表">
                 <el-table :data="playList" stripe style="width: 100%;height: 100%;">
                   <el-table-column fixed width="auto" min-width="10%" label="序号" type="index" />
                   <el-table-column width="auto" min-width="10%" label="源" prop="sourceType" />
@@ -578,7 +618,23 @@ function logout() {
                   <el-table-column width="auto" min-width="30%" align="right">
 
                     <template #header>
-                      <i-radix-icons-update class="clickAble" style="color: #07c160;" @click="updateLikeMusic"></i-radix-icons-update>
+                      <div class="flex-center" style="justify-content: flex-end; padding: 0 5px 0 5px;">
+                      <el-tooltip
+                        class="box-item"
+                        effect="light"
+                        content="同步数据"
+                        placement="bottom"
+                      >
+                      <i-radix-icons-update class="clickAble margin-lr5" style="color: #07c160;" @click="updateLikeMusic"></i-radix-icons-update>
+                      </el-tooltip>
+                      <el-tooltip
+                        effect="light"
+                        content="播放全部"
+                        placement="bottom"
+                      >
+                        <i-bi-play-fill @click="playAll(cloudLikeSong)" class="clickAble margin-lr5" style="color: #79bbff;font-size: x-large;"></i-bi-play-fill>
+                        </el-tooltip>
+                      </div>
                     </template>
 
                     <template #default="scope">
@@ -608,15 +664,24 @@ function logout() {
                   <el-table-column width="auto" min-width="30%" label="歌手" prop="artist" />
                   <el-table-column width="auto" min-width="30%" align="right">
 
-                    <!-- <template #header>
-                      <el-input size="small" placeholder="Type to search" />
-                    </template> -->
+                    <template #header>
+                      <div class="flex-center" style="justify-content: flex-end;">
+        
+                      <el-tooltip
+                        effect="light"
+                        content="播放全部"
+                        placement="bottom"
+                      >
+                        <i-bi-play-fill @click="playAll(musicSearchData.musicinfo)" class="clickAble" style="color: #79bbff;font-size: x-large;"></i-bi-play-fill>
+                        </el-tooltip>
+                      </div>
+                    </template>
 
                     <template #default="scope">
                       <div class="musicOperator">
                         <i-ep-Headset class="music_item_icon" @click="handlerMusic(scope.row)"></i-ep-Headset>
-                        <i-flat-color-icons:like class="music_item_icon"></i-flat-color-icons:like>
-                        <i-ep-CirclePlus class="music_item_icon" @click="addPlayList(scope.row)"></i-ep-CirclePlus>
+                        <i-flat-color-icons:like class="music_item_icon" @click="addLikeList(scope.row)"></i-flat-color-icons:like>
+                        <i-ph-playlist class="music_item_icon" @click="addPlayList(scope.row)"/>
                         <i-material-symbols-download-sharp class="music_item_icon" @click="downMusic(scope.row)" />
                       </div>
                     </template>
@@ -648,7 +713,7 @@ function logout() {
           </el-col>
 
           <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12" class="flex-center" style="flex-direction:column">
-            <div>
+            <div style="position: relative">
               <el-button @click="playPre" class="music_operator" type="primary" circle>
 
                 <template #icon>
@@ -671,6 +736,12 @@ function logout() {
                   <i-ant-design-right-outlined />
                 </template>
               </el-button>
+              <div class="playMode clickAble">
+                <i-fe-list-order v-if="playMode === 'order'" @click="playMode = 'random'"  style="font-size: xx-large;"/>
+                <i-fe-random v-if="playMode === 'random'" @click="playMode = 'loop'"  style="font-size: xx-large;"/>
+                <i-fe-loop v-if="playMode === 'loop'" @click="playMode = 'order'"  style="font-size: xx-large;"/>
+              </div >
+              
             </div>
 
             <div class="flex-center" style="width:100%">
@@ -681,9 +752,11 @@ function logout() {
                   <span class="processTime" style="padding-left:15px">{{ Math.trunc(duration / 60) + ':' + (duration %
       60 < 10 ? ('0' + (duration % 60).toFixed(0)) : (duration % 60).toFixed(0)) }}</span>
             </div>
+
+            
           </el-col>
 
-          <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6" class="flex-center" style="align-items:end">
+          <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6" class="flex-center" style="align-items:end"> 
             <div class="volumn">
               <i-uil-volume></i-uil-volume>
               <el-slider @change="volumnChange" :min=0 :max=100 :step=1 v-model="volumn" style="max-width:200px"
@@ -851,5 +924,15 @@ td {
 
 .el-tabs__item {
   color: whitesmoke !important;
+}
+.el-tooltip__trigger {
+  outline: none !important;
+}
+
+.playMode {
+  color: #409eff;
+  position: absolute;
+  right: -80px;
+  bottom: 0px;
 }
 </style>

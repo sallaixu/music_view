@@ -19,7 +19,8 @@
     "lyric-parser": "^1.0.1",
     "qrcode": "^1.5.3",
     "socket.io-client": "^4.7.5",
-    "vue": "^3.4.15"
+    "vue": "^3.4.15",
+    "vue3-lottie": "^3.3.0"
   },
   "devDependencies": {
     "@iconify-json/ant-design": "^1.1.15",
@@ -28,6 +29,7 @@
     "@iconify-json/el": "^1.1.8",
     "@iconify-json/ep": "^1.1.14",
     "@iconify-json/fa": "^1.1.8",
+    "@iconify-json/fe": "^1.1.10",
     "@iconify-json/flat-color-icons": "^1.1.10",
     "@iconify-json/gg": "^1.1.9",
     "@iconify-json/lets-icons": "^1.1.2",
@@ -36,6 +38,7 @@
     "@iconify-json/mi": "^1.1.8",
     "@iconify-json/ph": "^1.1.11",
     "@iconify-json/radix-icons": "^1.1.14",
+    "@iconify-json/ri": "^1.1.20",
     "@iconify-json/simple-line-icons": "^1.1.8",
     "@iconify-json/uil": "^1.1.8",
     "@iconify-json/vscode-icons": "^1.1.33",
