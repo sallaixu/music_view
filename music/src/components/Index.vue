@@ -613,7 +613,7 @@ function logout() {
                 <el-table :data="cloudLikeSong" stripe style="width: 100%;height: 100%;">
                   <el-table-column fixed width="auto" min-width="10%" label="序号" type="index" />
                   <el-table-column width="auto" min-width="10%" label="源" prop="sourceType" />
-                  <el-table-column width="auto" min-width="30%" label="歌曲" prop="name" />
+                  <el-table-column width="auto" min-width="30%" label="歌曲" prop="title" />
                   <el-table-column width="auto" min-width="20%" label="歌手" prop="artist" />
                   <el-table-column width="auto" min-width="30%" align="right">
 
