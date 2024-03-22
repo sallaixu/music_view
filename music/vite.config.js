@@ -57,16 +57,16 @@ export default defineConfig({
     host: "0.0.0.0",
     port: 3000
   },
-  build: {
-    rollupOptions: {
-      output: {
-        // 分包
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            return id.toString().split('node_modules/')[1].split('/')[0].toString()
-          }
-        }
-      }
-    }
-  }
+  // build: {
+  //   rollupOptions: {
+  //     output: {
+  //       // 分包
+  //       manualChunks(id) {
+  //         if (id.includes('node_modules')) {
+  //           return id.toString().split('node_modules/')[1].split('/')[0].toString()
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 })
