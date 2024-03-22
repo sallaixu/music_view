@@ -696,7 +696,7 @@ function logout() {
       <el-footer height="auto">
         <!-- 播放进度条 -->
         <el-row style="flex-wrap:wrap">
-          <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6" class="flex-center" style="align-items: end;">
+          <el-col :xs="24" :sm="16" :md="6" :lg="6" :xl="6" class="flex-center" style="align-items: center;justify-content: start;">
             <div class="playInfo">
               <el-image v-if="musicInfo != null && musicInfo.imgUrl != null"
                 style="width: 100px; height: 100px; min-width:100px;display:block" :src="musicInfo.imgUrl"
@@ -712,7 +712,7 @@ function logout() {
             </div>
           </el-col>
 
-          <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12" class="flex-center" style="flex-direction:column">
+          <el-col :xs="20" :sm="20" :md="12" :lg="12" :xl="12" class="flex-center" style="flex-direction:column">
             <div style="position: relative">
               <el-button @click="playPre" class="music_operator" type="primary" circle>
 
@@ -756,7 +756,7 @@ function logout() {
             
           </el-col>
 
-          <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6" class="flex-center" style="align-items:end"> 
+          <el-col :xs="24" :sm="24" :md="6" :lg="6" :xl="6" class="flex-center" style="align-items:end"> 
             <div class="volumn">
               <i-uil-volume></i-uil-volume>
               <el-slider @change="volumnChange" :min=0 :max=100 :step=1 v-model="volumn" style="max-width:200px"
