@@ -28,13 +28,8 @@ Service.interceptors.request.use(config => {
   if(token) {
     config.headers.token = token;
   }
-  // loadingInstance = ElLoading.service({
-  //   lock: true,
-  //   text: 'Loading',
-  //   background: 'rgba(0, 0, 0, 0.2)',
-  // })
   load.show({
-    title: "处理中",
+    title: "处理中,请稍后",
     data: loadingJson
   })
   return config
@@ -44,10 +39,15 @@ Service.interceptors.response.use(response => {
   // loadingInstance.close()
   // console.log(response)
   load.hide();
-  if(response.data.code != 200) {
-    ElMessage.error(response.data.msg);
+  if(response.data.code == 200) { 
+    return response.data
   }
-  return response.data
+  ElMessage.error(response.data.msg);
+  if(response.data.code == 201) {
+    // token异常
+    localStorage.removeItem("token");
+    window.location.reload();
+  }
 }, error => {
   console.log('TCL: error 1', error)
   const msg = error.Message !== undefined ? error.Message : ''

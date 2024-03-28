@@ -497,7 +497,7 @@ function logout() {
 </script>
 
 <template>
-  <div class="common-layout">
+  <el-row class="common-layout" justify="center">
     <!-- 删除确认弹窗 -->
     <el-dialog
     v-model="deleteDialog"
@@ -526,9 +526,9 @@ function logout() {
         </div>
       </template>
     </el-dialog>
-
-
-    <el-container style="height: 100%">
+    <el-col :xs="24" :sm="24" :md="20" :lg="16" :xl="12" class="box-container">
+  
+    <el-container  style="height: 100%">
       <el-header height="auto">
         <el-row :gutter="5" justify="space-between">
           <!-- <el-col :xs="20" :sm="14" :md="10" :lg="8" :xl="8"> -->
@@ -696,7 +696,7 @@ function logout() {
       <el-footer height="auto">
         <!-- 播放进度条 -->
         <el-row style="flex-wrap:wrap">
-          <el-col :xs="24" :sm="16" :md="6" :lg="6" :xl="6" class="flex-center" style="align-items: center;justify-content: start;">
+          <el-col :xs="24" :sm="24" :md="6" :lg="6" :xl="6" class="flex-center" style="align-items: center;justify-content: start;">
             <div class="playInfo">
               <el-image v-if="musicInfo != null && musicInfo.imgUrl != null"
                 style="width: 100px; height: 100px; min-width:100px;display:block" :src="musicInfo.imgUrl"
@@ -712,7 +712,7 @@ function logout() {
             </div>
           </el-col>
 
-          <el-col :xs="20" :sm="20" :md="12" :lg="12" :xl="12" class="flex-center" style="flex-direction:column">
+          <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" class="flex-center" style="flex-direction:column">
             <div style="position: relative">
               <el-button @click="playPre" class="music_operator" type="primary" circle>
 
@@ -766,7 +766,8 @@ function logout() {
         </el-row>
       </el-footer>
     </el-container>
-  </div>
+  </el-col>
+  </el-row>
 </template>
 
 <style lang="less">
@@ -813,12 +814,17 @@ transform: scale(1.1);
 }
 
 .common-layout {
-  height: 100%;
+  height: 100vh;
   // box-shadow: 0 0 30px 10px rgba(0, 0, 0, .3);
-  backdrop-filter: blur(40px);
-  border-radius: 40px;
-  padding: 10px 0 10px 0;
+}
 
+.box-container{
+  height: 100%;
+  background-color:#667564;
+  // background-image: url(@/assets/static/wenli2.png);
+  // background-repeat: repeat;
+  // backdrop-filter: blur(100px);
+  border-radius: 10px;
 }
 
 .input-div {
@@ -905,11 +911,12 @@ td {
 }
 
 .el-tabs__nav {
-  border: 2px solid whitesmoke !important;
-  border-radius: 6px !important;
+  border: 1px solid whitesmoke !important;
+  border-radius: 3px !important;
 
   .is-active {
-    color: #409eff !important;
+    // color: #409eff !important;
+    background-color: #383838c5 !important;
   }
 }
 

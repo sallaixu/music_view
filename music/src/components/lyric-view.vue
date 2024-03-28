@@ -6,7 +6,7 @@
       {{ line.txt }}
     </div>
   </div>
-  <el-empty style="height: 100%;" v-if="lyricLines == null" description = "歌词走丢啦~🛸"/>
+  <el-empty style="height: 100%;color: white;" v-if="lyricLines == null" description = "歌词走丢啦~🛸"/>
 </div>
 </template>
 
@@ -133,6 +133,10 @@ export default {
   color: #409eff;
   text-shadow: 3px 3px 3px rgba(32, 32, 32, 0.815);
   font-size: x-large;
+}
+
+.el-empty__description p{
+  color: #e8e8e9  !important;
 }
 
 // .el-tabs__content{
