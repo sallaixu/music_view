@@ -11,7 +11,7 @@ import index from './components/Index.vue'
   height: 100vh;
 }
 body{
-  // background-image: url(../src/assets/static/bg_2.jpg);
+  background-image: url(../src/assets/static/bg_2.jpg);
   background-color: #ededed;
   position: relative; 
 }

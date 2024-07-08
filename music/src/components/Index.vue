@@ -526,7 +526,7 @@ function logout() {
         </div>
       </template>
     </el-dialog>
-    <el-col :xs="24" :sm="24" :md="20" :lg="16" :xl="12" class="box-container">
+    <el-col :xs="24" :sm="24" :md="22" :lg="20" :xl="18" class="box-container">
   
     <el-container  style="height: 100%">
       <el-header height="auto">
@@ -820,10 +820,10 @@ transform: scale(1.1);
 
 .box-container{
   height: 100%;
-  background-color:#667564;
+  background-color:rgba(73, 88, 95, 0.7);
   // background-image: url(@/assets/static/wenli2.png);
   // background-repeat: repeat;
-  // backdrop-filter: blur(100px);
+
   border-radius: 10px;
 }
 
@@ -908,6 +908,11 @@ td {
 
 .el-tabs__header {
   border-bottom: none !important;
+  
+}
+
+.el-table thead{
+  color: black !important;
 }
 
 .el-tabs__nav {
